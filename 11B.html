@@ -210,5 +210,294 @@ Software applications and cloud srevices paid for by subscription rather than pe
 Most of this delivered by a secure website or cloud application, and may be necessary to provision authentication mechanisms for enterprise single sign-on (SSO) access to the services.
 </p>
 
+<p>
+Another use is a web feed, where articles or new items are pushed to the client or browser.
+</p>
+<ul>
+<li>
+Web feeds are based on either the Really Simply Syndication (RSS) or Atom formats
+
+<li>
+May be vulnerable to XML injection style attacks, allowing an attacker to show malicious links or even interact with the file system.
+
+</ul>
+<div id="Topic 11B: Implementing Secure Application Protocols-File Transfer Services"><h2 id="File Transfer Services" class="header"><a href="#Topic 11B: Implementing Secure Application Protocols-File Transfer Services">File Transfer Services</a></h2></div>
+
+<p>
+<span id="Topic 11B: Implementing Secure Application Protocols-File Transfer Services-File Transfer Protocol (FTP)"></span><strong id="File Transfer Protocol (FTP)">File Transfer Protocol (FTP)</strong>
+</p>
+<ul>
+<li>
+Typically configured with several public directories, hosting files, and user accounts.
+
+<li>
+Most HTTP servers also function as FTP servers, and FTP services, accounts, and directories may be installed and enabled by default when you install a web server.
+
+<li>
+More efficient with less security mechanisms
+
+<li>
+FTP is more efficient compared to file attachments or HTTP file transfer, but has no security mechanisms.
+
+<li>
+All authentication transmittted as plaintext.
+
+</ul>
+<p>
+<span id="Topic 11B: Implementing Secure Application Protocols-File Transfer Services-SSH FTP (SFTP) and FTP Over SSL (FTPS)"></span><strong id="SSH FTP (SFTP) and FTP Over SSL (FTPS)">SSH FTP (SFTP) and FTP Over SSL (FTPS)</strong>
+SSH FTP (SFTP) addresses the privacy and integrity issues of FTP by encrypting the authentication and data transfer between client and server.
+</p>
+<ul>
+<li>
+In SFTP secure link is created between the client and server usign Secure Shell (SSH) over TCP port 22.
+
+<li>
+Then ordinary FTP commands can be sent without risk of MITM attacks.
+
+</ul>
+<p>
+Another means of securing FTP is to use the connection security protocol SSL/TLS. Two ways of doing this:
+</p>
+<ol>
+<li>
+Explicit TLS (FTPES) - use the AUTH TLS command to upgrade an unsecure connection established over port 21 to a secure one.
+    This protects authentication credentials. The data connection for the actual file transfers can also be encrypted using the PROT command.
+
+<li>
+Implicit TLS (FTPS) - negotiate an SSL/TLS tunnel before the exchange of any FTP commands. THis omde uses the secure port 990 for the control connection.
+
+</ol>
+<p>
+FTPS is tricky to configure when there are firewalls between the client and server. Consequently, FTPES is usually the rpeferred method.
+</p>
+
+<div id="Email Services"><h1 id="Email Services" class="header"><a href="#Email Services">Email Services</a></h1></div>
+
+<p>
+Two types of email protocol:
+</p>
+<ol>
+<li>
+The simple Mail Transfer Protocol (SMTP) transmits email messages from one system to another.
+
+<li>
+The Post Office Protocol v3 (POP3) receives email messages from an email server to store on a client computer.
+
+</ol>
+<p>
+<span id="Email Services-Secure SMTP (SMTPS)"></span><strong id="Secure SMTP (SMTPS)">Secure SMTP (SMTPS)</strong>
+Sender's SMTP server discovers the IP address fo teh recipient's SMTP server usign the domain name of the recipient's email address.
+</p>
+
+<p>
+SMTP server for the domain is registered in DNS using a Mail Exchanger (MX) record.
+</p>
+
+<p>
+SMTP communications can be secured usign TLS. Works like GTTPS with a certificate on the SMTP server.
+</p>
+
+<p>
+Two ways for SMTP to use TLS:
+</p>
+
+<ol>
+<li>
+STARTLS - Command that upgrades an existing unsecure connection to use TLS.
+    Referred to as explicit TLS or opportunistic TLS.
+
+<li>
+SMTPS - established the secure connection befoer any SMTP commands are exchanged.
+    Referred to as implicit TLS.
+
+</ol>
+<pre><code>
+</code></pre>
+<p>
+STARTTLS method is generally more widely used. Typical config is as follows:
+</p>
+<ul>
+<li>
+Port 25 - Used for emssage relay.
+
+<ul>
+<li>
+If security is required and supported, STARTTLS can be used to set up secure connection.
+
+</ul>
+<li>
+Port 587 - Used by mail clients to submit messages for delivery by SMTP server.
+
+<ul>
+<li>
+Servers using Port 587 should use STARTTLS and requrie authentication before message submission.
+
+</ul>
+<li>
+Port 465 - Some use for message submission over implicit TLS (SMTPS)
+
+<ul>
+<li>
+Now depreciated by standards documentation.
+
+</ul>
+</ul>
+<p>
+<span id="Email Services-Secure POP"></span><strong id="Secure POP">Secure POP</strong>
+Client email connects to server mailbox, POP3 downloads the email messages.
+</p>
+<ul>
+<li>
+Outlook or thunderbird
+
+<li>
+Establish TCP to the POP3 server over port 110
+
+<li>
+User authenticated (username, pass)
+
+<li>
+contents downloaded to local PC
+
+<li>
+POP3S is the secured version, oeprating over TCP port 995 by default
+
+</ul>
+<p>
+<span id="Email Services-Secure IMAP"></span><strong id="Secure IMAP">Secure IMAP</strong>
+Internet Message Access Protocol v4 (IMAP4) supports permanent connections to server and multiple clients to the same mailbox simultaneously.
+</p>
+<ul>
+<li>
+Also allows clients to manage mail folders on the server
+
+<li>
+Client connects to IMAP over TCP port 143
+
+<li>
+Authenticate themselves then retrieve messages from the designated folders
+
+<li>
+Connection can be secured using an SSL/TLS tunnel
+
+<li>
+Default port for IMAPS is TCP port 993
+
+</ul>
+<div id="Email Services-Secure/Multipurpose Internet Mail Extensions"><h2 id="Secure/Multipurpose Internet Mail Extensions" class="header"><a href="#Email Services-Secure/Multipurpose Internet Mail Extensions">Secure/Multipurpose Internet Mail Extensions</a></h2></div>
+
+<p>
+E2E encryption cannot always be guaranteed. Authentication and confidentiality need to be applied on a per-message basis.
+</p>
+
+<p>
+One means of this is called <span id="Email Services-Secure/Multipurpose Internet Mail Extensions-Secure/Multipurpose Internet Mail Estensions (S/MIME)"></span><strong id="Secure/Multipurpose Internet Mail Estensions (S/MIME)">Secure/Multipurpose Internet Mail Estensions (S/MIME)</strong>
+</p>
+<ul>
+<li>
+User is issued a digital certificate with his or her public key, signed by CA to establish validity
+
+<li>
+Public key is a pair with a private key kept secret by teh user
+
+<li>
+Both users must be usign S/MIME and exchange certificates:
+
+<ol>
+<li>
+Alice sends bob her digital cert with her public key and validated digital ID (email address). Signed with her private key.
+
+<li>
+Bob uses the public key in the cert to decode her signature and the signature of the CA. Decides that he can trust her.
+
+<li>
+He responds with his digital certificate and public key. Alice does the same to Bob.
+
+<li>
+Both Alice and Bob now have eachother's cert in their trusted stores
+
+<li>
+When alice wnats to send Bob a confidential message, she makes a hash of the message and signs the hash using her private key. She then encrypts the message, hash, and her public key using Bob's public key and sends a message to Bob with this data as an S/MIME attachment
+
+<li>
+Bob recieves the message and decrypts the attachment with his private key. Validates signature and the integrity of the message by decrypting it with Alice's public key and comparing her hash value with one he makes himself
+
+</ol>
+</ul>
+<div id="Email Services-Voice and Video Services"><h2 id="Voice and Video Services" class="header"><a href="#Email Services-Voice and Video Services">Voice and Video Services</a></h2></div>
+
+<p>
+<span id="Email Services-Voice and Video Services-Voice over IP (VoIP)"></span><strong id="Voice over IP (VoIP)">Voice over IP (VoIP)</strong>, web conferencing, and teleconferencing (VTC) solutions have become standard methods for the provision of business commmunications
+</p>
+<ul>
+<li>
+Real time data with point-to-point links between hosts on different networks
+
+<li>
+Protocols, servers, handsets, and software need to be evaluated for threats and vulnerabilities
+
+<ul>
+<li>
+Session control - Setup and manage communications sessions.
+
+<ul>
+<li>
+Tasks like User discovery, availability advertising, negotiating session parameters, and session management and termination
+
+</ul>
+<li>
+Data transport - Handles the delivery of the actual video or voice information
+
+<li>
+Quality of Service (QoS) - provides info about connection to QoS system
+
+</ul>
+</ul>
+<p>
+<span id="Email Services-Voice and Video Services-Session Initiation Protocol"></span><strong id="Session Initiation Protocol">Session Initiation Protocol</strong> is on of most widely used session control protocols. 
+</p>
+<ul>
+<li>
+SIP endpoints are end user devices.
+
+<li>
+IP-enabled handsets or client and server web conference software
+
+<li>
+Each device, conference, user assigned a unique SIP known as SIP Uniform Resource Indicator (URI), such as <a href="sip:bob.dobbs@comptia.org">sip:bob.dobbs@comptia.org</a>
+
+<li>
+Can establish communications directly in a peer to peer architecture
+
+<li>
+May also use gateways and private branch exchange (PBX) appliances to provide an interface between the VoIP network and external and cellular networks
+
+</ul>
+<p>
+Actual delivery of real-time data uses different protocols.
+</p>
+<ul>
+<li>
+Principle one is Real-time Transport Protocol (RTP).
+
+<li>
+Threat actor can exploit unencrypted voice and video to try to intercept passwords, credit card details, and MITM attacks
+
+</ul>
+<p>
+To initiate call:
+</p>
+<ul>
+<li>
+secure version of SIPS uses digital certificates to authenticate the endpoints and establish a TLS tunnel
+
+<li>
+Unencrypted SIP typically runs over UDP or TCP port 5060, SIPS uses TCP port 5061
+
+<li>
+Secure connection from SIPS can also generate master key to use with the secure versions of the transport protocol (SRTP)
+
+</ul>
+
 </body>
 </html>

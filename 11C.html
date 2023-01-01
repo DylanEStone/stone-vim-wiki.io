@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="Stylesheet" type="text/css" href="style.css">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml">
+<title>11C</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+
+<div id="Topic 11C: Implement Secure Remote Access Protocols"><h1 id="Topic 11C: Implement Secure Remote Access Protocols" class="header"><a href="#Topic 11C: Implement Secure Remote Access Protocols">Topic 11C: Implement Secure Remote Access Protocols</a></h1></div>
+
+<p>
+Understanding how to implement secure remote access protocols will eb a major part as an information security professional.
+</p>
+
+<div id="Topic 11C: Implement Secure Remote Access Protocols-Remote Access Architecture"><h3 id="Remote Access Architecture" class="header"><a href="#Topic 11C: Implement Secure Remote Access Protocols-Remote Access Architecture">Remote Access Architecture</a></h3></div>
+
+<p>
+Does not make direct cabled or wireless connection to the network.
+</p>
+<ul>
+<li>
+Remote access is implemented as a virtual private network (VPN)
+
+<li>
+Administering remote access involves the same tasks as administering the local network 
+
+<li>
+Additional complexity comes about because it can be more difficult to ensure the security of remote workstations and servers and there is greater opportunity for remote logins to be exploited
+
+<li>
+With VPN, secure tunnel is establisehd so that contents are kept private, even to ISP
+
+</ul>
+<p>
+VPNs can be used to connects sites in order to connect two or more networks.
+</p>
+<ul>
+<li>
+Configured to operate automatically
+
+<li>
+Exchange security info using whichever protocol the VPN is based on
+
+<li>
+Hosts at eahc site do not need to be configured wit hany information about the VPN
+
+</ul>
+<div id="Topic 11C: Implement Secure Remote Access Protocols-Transport Layer Security VPN"><h3 id="Transport Layer Security VPN" class="header"><a href="#Topic 11C: Implement Secure Remote Access Protocols-Transport Layer Security VPN">Transport Layer Security VPN</a></h3></div>
+
+<p>
+Point-to-point Tunneling Protocol (PPTP) has been depreciated because they do not offer adequate security.
+</p>
+<ul>
+<li>
+Transport layer security (TLS) and IPSec are now the preferred options for configuring VPN Access
+
+</ul>
+<li>
+TLS VPN
+
+<ul>
+<li>
+Referred to as an SSL VPN
+
+<li>
+Requries a remote access server listening on port 443
+
+<li>
+Client makes a connection to the server usign TLS
+
+<li>
+Creates encrypted tunnel for the user to submit authentication credentials
+
+<li>
+Once authenticated, VPN tunnels all communications for the lcoal network over the secure socket
+
+<li>
+OpenVPN is an open source example of TLS VPN
+
+</ul>
+<div id="Topic 11C: Implement Secure Remote Access Protocols-Internet Protocol Security"><h3 id="Internet Protocol Security" class="header"><a href="#Topic 11C: Implement Secure Remote Access Protocols-Internet Protocol Security">Internet Protocol Security</a></h3></div>
+
+<p>
+Where TLS works on an applation level, IPSec works at the network layer (layer 3) of the OSI model.
+</p>
+<ul>
+<li>
+Can provide both confidentiality, and integriy/anti-replay
+
+<li>
+Adds overhead to data communications
+
+<li>
+Can be used to secure communications on a local netowrk as a remote access protocol
+
+<li>
+Each host must be assigned a policy
+
+<li>
+Hosts must be able to match at least one matching securit ymethod for a connection to be established
+
+</ul>
+<p>
+<span id="Topic 11C: Implement Secure Remote Access Protocols-Internet Protocol Security-Authentication Header (AH)"></span><strong id="Authentication Header (AH)">Authentication Header (AH)</strong>
+Performs a cryptographic hash on the whole packet, including IP header, plus a shared secret key, and add this HMAC in its ehader as an Integrity Check Value (ICV).
+</p>
+<ul>
+<li>
+Recipient does the same thing, and if same value is derived, it has not been messed with
+
+<li>
+IP header fields in ICV means that the check will fail across NAT gateways, where the IP address is rewritten
+
+<ul>
+<li>
+Concequently, not often used
+
+</ul>
+</ul>
+<p>
+<span id="Topic 11C: Implement Secure Remote Access Protocols-Internet Protocol Security-Encapsulation Security Payload (ESP)"></span><strong id="Encapsulation Security Payload (ESP)">Encapsulation Security Payload (ESP)</strong>
+Provides confidentiality and/or authentication and integrity.
+</p>
+<ul>
+<li>
+Can be used to encrypt the packet rather than simply calculating an HMAC
+
+<li>
+Attaches three fields to the packet: header, trailer, and integrity check value.
+
+<li>
+Unlike AH, ESP excludes the IP header when calculating the ICV
+
+</ul>
+<div id="Topic 11C: Implement Secure Remote Access Protocols-IPSec Transport and Tunnel Modes"><h3 id="IPSec Transport and Tunnel Modes" class="header"><a href="#Topic 11C: Implement Secure Remote Access Protocols-IPSec Transport and Tunnel Modes">IPSec Transport and Tunnel Modes</a></h3></div>
+
+<p>
+IPSec can be used in two modes:
+</p>
+<ol>
+<li>
+Transport Mode: secure communications between hosts on a private network (and end-to end implementation)
+
+<ul>
+<li>
+When ESP is applied in transport mode, the IP header fo reach packet is not encrypted, just payload data
+
+<li>
+If AH used, provides integrity for the IP header
+
+</ul>
+<li>
+Tunnel Mode: Used for communications between VPN gateways across an unsecure network (creating a VPN)
+
+<ul>
+<li>
+Also referred to as a router implementation
+
+<li>
+Whole IP packed (header and payload) is encrypted and encapsulated as a datagram with a new IP header
+
+<li>
+No real use dcase in tunnel mode, as confidentiality will usually be required.
+
+</ul>
+</ol>
+<div id="Topic 11C: Implement Secure Remote Access Protocols-Internet Key Exchange"><h3 id="Internet Key Exchange" class="header"><a href="#Topic 11C: Implement Secure Remote Access Protocols-Internet Key Exchange">Internet Key Exchange</a></h3></div>
+
+<p>
+IPSEc encryption and hashing depend on a shared secret that must be communicated to both hosts and the hosts much confirm one another's identities.
+</p>
+<ul>
+<li>
+Otherwise, the connection is vulnerable to MITM and spoofing attacks
+
+<li>
+Interned Key Exchange (IKE) protocol handles authentication and key exchange
+
+<ul>
+<li>
+Referred to as Security Associations (SA)
+
+</ul>
+</ul>
+<p>
+IKE negotiations take place over two phases:
+</p>
+<ol>
+<li>
+Establish identity of two hosts and Diffie-Hellman key agreement to create a secure channel. Two methods of authenticating hosts are commonly used:
+
+<ul>
+<li>
+Digital certificates
+
+<li>
+Pre-shared key
+
+</ul>
+<li>
+Use secure channel to establish what ciphers and key sizes will be used with AH and/or ESP in the IPSec session
+
+</ol>
+<div id="Topic 11C: Implement Secure Remote Access Protocols-Layer 2 Tunneling Protocol and IKE V2"><h3 id="Layer 2 Tunneling Protocol and IKE V2" class="header"><a href="#Topic 11C: Implement Secure Remote Access Protocols-Layer 2 Tunneling Protocol and IKE V2">Layer 2 Tunneling Protocol and IKE V2</a></h3></div>
+
+<p>
+First version of IKE did not rpovide simple means fo rclient user to authenticate to a remote network directory.
+</p>
+<ul>
+<li>
+For remote access VPNs, combo of IPSec with Layer 2 Tunneling Protocol (L2TP) is often used
+
+</ul>
+<p>
+<span id="Topic 11C: Implement Secure Remote Access Protocols-Layer 2 Tunneling Protocol and IKE V2-Layer 2 Tunneling Protocol/IPSec VPN"></span><strong id="Layer 2 Tunneling Protocol/IPSec VPN">Layer 2 Tunneling Protocol/IPSec VPN</strong>
+Typically operates as follows:
+</p>
+<ol>
+<li>
+Client and VPN Gateway set up IPSec channel over internet, using PSK or certs.
+
+<li>
+Gateway uses L2TP to set up tunnel to exchange local network data encapsulated as Point-to-Point Protocol (PPP) frames
+
+<ul>
+<li>
+Adds overhead
+
+</ul>
+<li>
+User authenticates over the PP session using EAP or CHAP
+
+</ol>
+<p>
+<span id="Topic 11C: Implement Secure Remote Access Protocols-Layer 2 Tunneling Protocol and IKE V2-IKE v2"></span><strong id="IKE v2">IKE v2</strong>
+Has some features that have made the protocol popular for use as a standalone remote access VPN solution.
+</p>
+<ul>
+<li>
+Support for EAP authentication methods.
+
+<ul>
+<li>
+allows for user to authenticate against RADIUS, for example 
+
+</ul>
+<li>
+Simplified connection set up
+
+<ul>
+<li>
+Single 4 message setup mode, redusing bandwidth without compromising security
+
+</ul>
+<li>
+Reliability
+
+<ul>
+<li>
+NAT traversal and MOBIKE multihoming
+
+<ul>
+<li>
+Multihoming refers to when a client can keep IPSec switching between multiple network interfaces
+
+</ul>
+</ul>
+</ul>
+<p>
+IKE v2 is more efficient that IPSec, and is much mor supported.
+</p>
+
+<div id="Topic 11C: Implement Secure Remote Access Protocols-VPN Client Configuration"><h3 id="VPN Client Configuration" class="header"><a href="#Topic 11C: Implement Secure Remote Access Protocols-VPN Client Configuration">VPN Client Configuration</a></h3></div>
+
+<p>
+Client software needed for non OS-Supported VPNs.
+</p>
+
+<p>
+<span id="Topic 11C: Implement Secure Remote Access Protocols-VPN Client Configuration-Always on VPN"></span><strong id="Always on VPN">Always on VPN</strong>
+Computer establishes the VPN whenever an internet connection over a trusted network is detected.
+</p>
+<ul>
+<li>
+Uses cache to authenticate
+
+</ul>
+
+</body>
+</html>

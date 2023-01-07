@@ -1,0 +1,85 @@
+== DNS Security ==
+
+DNS is a critical service that should be configured to be fault tolerant.
+* DoS attacks are hard to perform agains the servers that perform agains servers that perform Internet name resolution.
+* To ensure DNS security on a private network, lcoal DNS servers should only 
+  accept recursive queries from local hosts and not the internet.
+*  Attacks on DNS may also target the server application and/or configuration.
+  a) Many DNS services run on BIND (Berkely Internet Name Domain)
+  b) There are known vulnerabilities in many versions of the BIND server so critical to patch.
+
+* DNS footprinting means obtaining information about a private network by using its DNS server to perform a zone transfer to a rogue DNS
+  a) To prevent this, you can apply an Access Control list to prevent zone transfers to unautorized hosts or domains.
+
+*DNS Security Extensions (DNSSEC)* help to mitigate agains spoofing and poisoning attacks by providing a validation process for DNS responses.
+* With DNSSEC enabled, the authoritative server for teh zone creates a "package" of resource records (Called an RRset) signed with a private key (the Zone Signing Key). 
+* Public zone signing key is itslef signed with a separate Key Signing Key. 
+* Separate keys are used so that if there is some sort of compromise of the zone signing key, the domain can continue to operate securely by revoking the compromised key and issuing a new one.
+* Key Signing for a particular domain is validated by the parent domain or host ISP.
+
+== Secure Directory Services ==
+
+A network directory lists the subjects and objects available on the network, plus the permissions that subjects have over objects.
+  * A network directory facilitates authentication and authorization
+    * It is critical that it be maintained as a highly secure service.
+  * Most directory services are based on Lightweight Directory Access Protocol (LDAP).
+    * Port 389.
+
+Authentication can be implemented in the following ways:
+- No Authentication: Anonymous access granted to the directory.
+- Simple Bind: the clinet must supply its distinguished name (DN) and password, 
+  - These are passed as plaintext.
+- Simple Authentication and Security Layer (SASL): client and server negotiate the use of a supported authentication mechanism. 
+  - STARTTLS commmand can be used to requrie encryption (sealing) and message integrity (signing).
+  - Preferred mechanism fo rMicrosoft's Active Directory (AD) implementation of LDAP.
+- *LDAP Secure (LDAPS)*: Server is insalled with a digital certificate, which it uses to set up a secure tunnel for the user credential exchange.
+  - Uses port 636.
+
+If secure access is requried, anonymous and simple authentication access methods shoudl be disabled on the server.
+
+Generally, two levels of access will need to be granted on the directory:
+  1. read-only access (query)
+  2. read/write access (update).
+Implemented using an access control policy but the precise mechanism is vendor specific and not specifieed by the LDAP standards documentation.
+  * LDAP server should also only be accessibel from the private network.
+    * Should be blocked by a firewall from access over the public interface.
+    * Ideally, only authorized IPs would be permitted.
+
+== Time Synchronization ==
+
+Many applications on netwroks are time dependent and time critical. This includes mechanisms like authentication, security, and backup software.
+
+The Network Time Protocol (NTP) provides a transport over which to synchronize these time dependent applications. 
+  - NTP works over port 123.
+
+Top-level NTP servers (Stratum 1) obtain teh Coordinated Universal Time (UTC) from a highly accurate clock source, such as an atomic clock.
+  - Lower tier servers then obtain the UTC from multiple stratum 1 servers and smaple the results to obtain an authritative time.
+  - Clients themselves usually obtain the time using a modified form of the protocol (Simple NTP).
+  - NTP has historically lacked any sort of security mechanism, but there are moves to create a security extension for the protocol called Netwrok Time Security.
+
+== Simple Network Management Protocol Security ==
+
+The *Simple Network Management Protocol (SNMP)* is a widely used framework for management and monitoring.
+  - Consists of an SNMP monitor and agents.
+
+1. The agent is aprocess (software or firmware) running on a switch, router, server, or other SNMP-compatible netwrok device.
+2. This agent maintains a database called a management information base (MIB).
+  - holds statistics relating to teh activity of the device (for example, the number of frames per second handled by a switch).
+  - Can also trigger trap operations where it informs the management system of a notable event.
+3. The SNMP monitor (a software program) provides a location from which netowrk activity can be overseen.
+  - polls agents at regular intervals for info from their MIBs and display the information for review.
+  - Displays any trap operations as alerts for the network administrator to assess and act upon as necessary.
+
+If SNMP is not used, defualt configuration password should be changed and disabled on any SNMP-capable devices that you add to the network.
+
+If running SNMP v1 or V2c, keep to the following: 
+
+  * SNMP community names sent in plaintext.
+    * Should not be transmitted over the network if there is any risk that they could be intercepted
+  * Use hard to hguess community names
+    * never blank or default.
+  * Use ACL's to restrict management operations to known hosts (that is, restrict to one or two host IP addresses.)
+  * SNMP v3 supports encryption and strong user-based auth.
+    * Agent is configured with list of usernames and access permissions.
+    * When auth is required, SNMP message signed with hash of user pass.
+    * Agent can then verify the signature and auth the user using its own record of the passphrase.

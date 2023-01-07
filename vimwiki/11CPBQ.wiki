@@ -1,0 +1,13 @@
+=== 11C: Implement Secure Remote Access Protocols Performance-based Question ===
+
+Full tunnel offers better security.
+  - Internet access mediated by the corporate network.
+  - Alter the client's IP address and DNS servrs and may use a proxy.
+
+  * SSTP is a native Windows application while L2TP/IPSEC supporty many platforms including MacOS.
+    - L2TP/IPSEC: port 1701-UDP
+    - SSTP:       port 443-TC
+
+| Platform | VPN Protocol | VPN Protocol Firewall Port |
+| OSX      | L2TP/IPSEC   | 1701 - UDP                 |
+| Windows  | SSTP         | 443 - TCP                  |

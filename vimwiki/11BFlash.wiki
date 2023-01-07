@@ -1,0 +1,27 @@
+=== What type of attack against HTTPS aims to force the server to negotiate weak ciphers? ===
+
+- Downgrade attack
+
+=== A client and server have agreed on the use of the cipher suite ECDHE-ECDSA-AES256-GCM-SHA384 for a TLS session. What is the key strength of the symmetric encryption algorithm? ===
+
+- 256 bit
+
+=== What security protocol does SFTP use to protect the connection and which port does an SFTP server listen on by default? ===
+
+- TCP Tunneling
+- Secure Shell (SSH) over TCP port 22
+
+=== Which port(s) and security methods should be used by a mail client to subimt messages for delivery by and SMTP server? ===
+
+- 443 (incorrect)
+- Port 587 with STARTTLS (explicit TLS) or port 465 with implicit TLS.
+
+=== When using S/MIME, which key is used to encrypt a message? ===
+
+- The senders private key. (incorrect)
+- The recipient's public key (principally). The public key is used to encryp a symmetric session key and (for performance reasons) the session key does the actual data encoding. The session key and, therefor, the message text can then only be recovered by the recipient, who uses the linked private key to decrypt it. TODO Review
+
+=== Which protocol protects the contents of a VoIP conversation from eavesdropping? ===
+
+- End to end encryption (incorrect)
+- Encrypted VoIP data is carried over the Secure Real-time Transport Protocol (SRTP).

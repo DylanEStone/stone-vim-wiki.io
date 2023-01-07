@@ -1,0 +1,118 @@
+= Topic 11C: Implement Secure Remote Access Protocols =
+
+Understanding how to implement secure remote access protocols will eb a major part as an information security professional.
+
+=== Remote Access Architecture===
+
+Does not make direct cabled or wireless connection to the network.
+  - Remote access is implemented as a virtual private network (VPN)
+  - Administering remote access involves the same tasks as administering the local network 
+  - Additional complexity comes about because it can be more difficult to ensure the security of remote workstations and servers and there is greater opportunity for remote logins to be exploited
+  - With VPN, secure tunnel is establisehd so that contents are kept private, even to ISP
+
+VPNs can be used to connects sites in order to connect two or more networks.
+  - Configured to operate automatically
+  - Exchange security info using whichever protocol the VPN is based on
+  - Hosts at eahc site do not need to be configured wit hany information about the VPN
+
+=== Transport Layer Security VPN ===
+
+Point-to-point Tunneling Protocol (PPTP) has been depreciated because they do not offer adequate security.
+  - Transport layer security (TLS) and IPSec are now the preferred options for configuring VPN Access
+
+* TLS VPN
+  - Referred to as an SSL VPN
+  - Requries a remote access server listening on port 443
+  - Client makes a connection to the server usign TLS
+  - Creates encrypted tunnel for the user to submit authentication credentials
+  - Once authenticated, VPN tunnels all communications for the lcoal network over the secure socket
+  - OpenVPN is an open source example of TLS VPN
+
+=== Internet Protocol Security ===
+
+Where TLS works on an applation level, IPSec works at the network layer (layer 3) of the OSI model.
+  - Can provide both confidentiality, and integriy/anti-replay
+  - Adds overhead to data communications
+  - Can be used to secure communications on a local netowrk as a remote access protocol
+  - Each host must be assigned a policy
+  - Hosts must be able to match at least one matching securit ymethod for a connection to be established
+
+*Authentication Header (AH)*
+Performs a cryptographic hash on the whole packet, including IP header, plus a shared secret key, and add this HMAC in its ehader as an Integrity Check Value (ICV).
+  - Recipient does the same thing, and if same value is derived, it has not been messed with
+  - IP header fields in ICV means that the check will fail across NAT gateways, where the IP address is rewritten
+    - Concequently, not often used
+
+*Encapsulation Security Payload (ESP)*
+Provides confidentiality and/or authentication and integrity.
+  - Can be used to encrypt the packet rather than simply calculating an HMAC
+  - Attaches three fields to the packet: header, trailer, and integrity check value.
+  - Unlike AH, ESP excludes the IP header when calculating the ICV
+
+=== IPSec Transport and Tunnel Modes ===
+
+IPSec can be used in two modes:
+  1. Transport Mode: secure communications between hosts on a private network (and end-to end implementation)
+    - When ESP is applied in transport mode, the IP header fo reach packet is not encrypted, just payload data
+    - If AH used, provides integrity for the IP header
+  2. Tunnel Mode: Used for communications between VPN gateways across an unsecure network (creating a VPN)
+    - Also referred to as a router implementation
+    - Whole IP packed (header and payload) is encrypted and encapsulated as a datagram with a new IP header
+    - No real use dcase in tunnel mode, as confidentiality will usually be required.
+
+=== Internet Key Exchange ===
+
+IPSEc encryption and hashing depend on a shared secret that must be communicated to both hosts and the hosts much confirm one another's identities.
+  - Otherwise, the connection is vulnerable to MITM and spoofing attacks
+  - Interned Key Exchange (IKE) protocol handles authentication and key exchange
+    - Referred to as Security Associations (SA)
+
+IKE negotiations take place over two phases:
+  1. Establish identity of two hosts and Diffie-Hellman key agreement to create a secure channel. Two methods of authenticating hosts are commonly used:
+    - Digital certificates
+    - Pre-shared key
+  2. Use secure channel to establish what ciphers and key sizes will be used with AH and/or ESP in the IPSec session
+
+=== Layer 2 Tunneling Protocol and IKE V2 ===
+
+First version of IKE did not rpovide simple means fo rclient user to authenticate to a remote network directory.
+  - For remote access VPNs, combo of IPSec with Layer 2 Tunneling Protocol (L2TP) is often used
+
+*Layer 2 Tunneling Protocol/IPSec VPN*
+Typically operates as follows:
+  1. Client and VPN Gateway set up IPSec channel over internet, using PSK or certs.
+  2. Gateway uses L2TP to set up tunnel to exchange local network data encapsulated as Point-to-Point Protocol (PPP) frames
+    - Adds overhead
+  3. User authenticates over the PP session using EAP or CHAP
+
+*IKE v2*
+Has some features that have made the protocol popular for use as a standalone remote access VPN solution.
+  * Support for EAP authentication methods.
+    * allows for user to authenticate against RADIUS, for example 
+  * Simplified connection set up
+    * Single 4 message setup mode, redusing bandwidth without compromising security
+  * Reliability
+    * NAT traversal and MOBIKE multihoming
+      - Multihoming refers to when a client can keep IPSec switching between multiple network interfaces
+
+IKE v2 is more efficient that IPSec, and is much mor supported.
+
+=== VPN Client Configuration ===
+
+Client software needed for non OS-Supported VPNs.
+
+*Always on VPN*
+Computer establishes the VPN whenever an internet connection over a trusted network is detected.
+  - Uses cache to authenticate credentials
+
+*Split Tunnel versus Full Tunel*
+  1. Split tunnel: client accesses the internet directly using its "native" IP config and DNS servers
+  2. Full tunnel: Internet access mediated by the corporate netwrok, which will alter the client's IP address and DNS servers and may use a proxy
+
+Full tunnel has better security, however DNS operations can cause problems with some websites, especially cloud services. More data is also transferred through the link in the full tunnel as well.
+
+
+=== Remote Desktop ===
+
+Another model for remote networking involves connecting to a host within the local netowrk over a remote administration protocol.
+  * A GUI reote administration tool sends screen and audio data from the remote host to the client and transfers mouse and keyboard input from the client to the remote host.
